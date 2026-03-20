@@ -9,7 +9,7 @@
 <style>
 :root {
   --blue: #95A9C6; --blue-light: #C0D3E7; --blue-bg: #dce6ef;
-  --cream: #F0EDE6; --stone: #E0DCD1; --bear: #D8D1C3;
+  --cream: #faf9f5; --stone: #E0DCD1; --bear: #D8D1C3;
   --viridian: #344945; --text: #2c3830; --muted: #6b7a6e;
   --border: #d4cfc6; --white: #fff; --txt-light: #f9f8f6;
 }
@@ -448,7 +448,7 @@ function renderProfileCard(a){
           <div class="pc-name">${a.fname} ${a.lname}</div>
           <div class="pc-prof">${a.profession||'—'}</div>
           ${licenseHtml}
-          <div class="pc-verified">✓ Verified by Carely</div>
+          <div class="pc-verified"> ✔ Carely Verified </div>
         </div>
         <div class="pc-body">
           ${(a.exp_type||[]).length?`<div class="pc-row"><div class="pc-row-label">ประสบการณ์</div><div class="pc-tags">${(a.exp_type||[]).map(t=>`<span class="pc-tag">${t}</span>`).join('')}</div></div>`:''}
