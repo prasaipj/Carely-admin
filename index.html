@@ -129,6 +129,28 @@ main { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
   .detail-grid { grid-template-columns: 1fr; }
 }
 </style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCbtjoF4boc1qgnOTThHthxYiVCJMsfjO4",
+    authDomain: "carely-169b9.firebaseapp.com",
+    projectId: "carely-169b9",
+    storageBucket: "carely-169b9.firebasestorage.app",
+    messagingSenderId: "302078716521",
+    appId: "1:302078716521:web:32fe6bda3838939cbe10f8"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  window._db = db;
+  window._collection = collection;
+  window._getDocs = getDocs;
+  window._doc = doc;
+  window._updateDoc = updateDoc;
+  window._deleteDoc = deleteDoc;
+</script>
 </head>
 <body onload="checkPassword()"></body>
 
@@ -186,8 +208,9 @@ let applicants = [];
 let currentIdx = null;
 let selectedStars = 0;
 
-function loadData(){
-  applicants = JSON.parse(localStorage.getItem('carely_applicants')||'[]');
+async function loadData(){
+  const snapshot = await window._getDocs(window._collection(window._db,'applicants'));
+  applicants = snapshot.docs.map(d=>({...d.data(), _docId: d.id}));
   updateStats(); renderCards();
 }
 
@@ -242,7 +265,13 @@ function renderCards(){
 }
 
 function setStatus(idx,status){ applicants[idx].status=status; save(); updateStats(); renderCards(); }
-function save(){ localStorage.setItem('carely_applicants',JSON.stringify(applicants)); }
+async function save(){
+  const a=applicants[currentIdx];
+  if(!a||!a._docId) return;
+  const docRef=window._doc(window._db,'applicants',a._docId);
+  const {_docId,...data}=a;
+  await window._updateDoc(docRef,data);
+}
 
 function tagsHtml(arr){ return (arr||[]).map(t=>`<span class="tag">${t}</span>`).join(''); }
 
@@ -457,10 +486,14 @@ document.getElementById('modal').addEventListener('click',function(e){ if(e.targ
 loadData();
 
 
-function deleteApplicant(idx){
+async function deleteApplicant(idx){
   if(!confirm('ยืนยันลบใบสมัครนี้?')) return;
-  applicants.splice(idx, 1);
-  save(); updateStats(); renderCards();
+  const a=applicants[idx];
+  if(a._docId){
+    await window._deleteDoc(window._doc(window._db,'applicants',a._docId));
+  }
+  applicants.splice(idx,1);
+  updateStats(); renderCards();
 }
 
 function checkPassword(){
