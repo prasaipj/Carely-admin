@@ -484,7 +484,7 @@ function renderProfileCard(a){
 
 function saveProfileCard(){
   const card=document.getElementById('pc-card');
-  html2canvas(card,{scale:3,backgroundColor:'#fff',useCORS:true}).then(canvas=>{
+  html2canvas(card,{scale:4,backgroundColor:'#fff',useCORS:true}).then(canvas=>{
     const a=applicants[currentIdx];
     const link=document.createElement('a');
     link.download=`profile-${a.fname}-${a.lname}.png`;
